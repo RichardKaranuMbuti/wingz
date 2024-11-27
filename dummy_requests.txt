@@ -1,0 +1,14 @@
+1. # Create new user
+
+curl -X POST http://localhost:8000/api/register/ \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "admin@example.com",
+    "password": "admin123!",
+    "username": "admin",
+    "first_name": "Admin",
+    "last_name": "User",
+    "phone_number": "1234567890",
+    "role": "admin"
+  }'
+
