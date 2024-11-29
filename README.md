@@ -10,14 +10,14 @@ A Django REST Framework-based API for managing ride information, including users
 * 📊 Efficient pagination
 * 📅 Recent events tracking (24-hour window)
 * 📍 Distance-based sorting
-* 📖 Interactive API documentation (Swagger/ReDoc)
+* 📖 API documentation 
 
 ## Technical Stack
 
 * Python 3.8+
 * Django 4.2+
 * Django REST Framework
-* drf-spectacular (API documentation)
+* PostMan collections (API documentation)
 * SQLite/PostgreSQL
 
 ## Setup Instructions
@@ -28,7 +28,7 @@ A Django REST Framework-based API for managing ride information, including users
 # Git Clone Repository
 
 ```bash
-git clone <repository-url>
+git clone git@github.com:RichardKaranuMbuti/wingz.git
 cd wingz
 ```
 
@@ -49,6 +49,7 @@ pip install -r requirements.txt
 
 Create a `.env` file in the project root:
 
+Generate or paste your environment variables
 ```env
 DEBUG=True
 SECRET_KEY=your-secret-key
@@ -78,9 +79,48 @@ python manage.py runserver
 
 ## Authentication
 
-- All endpoints require authentication.
-- Only users with 'admin' role can access the API.
+- Ridelist endpoint require authentication by JWT tokens so first generate them by logging in first
+- Only users with 'admin' role can access the API(Ride List).
 - Use Token Authentication: Include `Authorization: Token <your-token>` in headers.
+- The provided postman collection has this provided and saved. 
+- See the tutorial below, 
+
+
+## Signup endpoint
+You need to signup first before getting authenticated for the protected endpoints
+
+## Signup Endpoint (`/api/register/`)
+
+Request body 
+```json
+{
+ "email": "notadmin@gmail.com",
+ "role": "user",
+ "password": "admin123!",
+ "username": "notadmin1",
+ "first_name": "Paul",
+ "last_name": "Jeff",
+ "phone_number": "0785634567"
+ }
+
+ ```
+
+
+## Login endpoint
+Upon successful authetication it provides you with both access and refesh tokens
+
+
+## login  (`/api/token/`)
+
+Request body 
+```json
+{
+ "email": "notadmin@gmail.com",
+ "password": "admin123!",
+ }
+ 
+ ```
+
 
 ## Rides Endpoint (`/api/rides/`)
 
@@ -137,58 +177,6 @@ Returns detailed ride information including:
 
 - Deletes the specified ride and its associated events.
 
-## Response Formats
-
-### Success Response
-
-```json
-{
-    "count": 100,
-    "next": "http://api/rides/?page=2",
-    "previous": null,
-    "results": [
-        {
-            "id_ride": 1,
-            "status": "en-route",
-            "rider": {
-                "id_user": 1,
-                "first_name": "John",
-                "last_name": "Doe",
-                "email": "john@example.com",
-                "phone_number": "1234567890"
-            },
-            "driver": {
-                "id_user": 2,
-                "first_name": "Jane",
-                "last_name": "Smith",
-                "email": "jane@example.com",
-                "phone_number": "0987654321"
-            },
-            "pickup_latitude": 37.7749,
-            "pickup_longitude": -122.4194,
-            "dropoff_latitude": 37.7750,
-            "dropoff_longitude": -122.4195,
-            "pickup_time": "2024-11-27T10:00:00Z",
-            "todays_ride_events": [
-                {
-                    "id_ride_event": 1,
-                    "description": "Driver arrived",
-                    "created_at": "2024-11-27T09:55:00Z"
-                }
-            ]
-        }
-    ]
-}
-```
-
-### Error Response
-
-```json
-{
-    "error": "Detailed error message",
-    "status": 400
-}
-```
 
 # Testing
 
@@ -206,10 +194,9 @@ python manage.py test rides -v 2
 
 # API Documentation
 
-Access the interactive API documentation:
+Access the comprehensive API documentation:
 
-- Swagger UI: [http://localhost:8000/api/schema/swagger-ui/](http://localhost:8000/api/schema/swagger-ui/)
-- ReDoc: [http://localhost:8000/api/schema/redoc/](http://localhost:8000/api/schema/redoc/)
+- Postman Collections : https://documenter.getpostman.com/view/28229446/2sAYBXCX4t
 
 # Implementation Notes
 

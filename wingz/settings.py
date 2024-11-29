@@ -1,14 +1,19 @@
 
 from pathlib import Path
+import os
+from dotenv import load_dotenv
+load_dotenv()
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-!*w-_(&3!sv8m&u0q@v=@adn838wy4)jr=-@@(p2vba&xj6rad'
+SECRET_KEY = os.getenv("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
+
 DEBUG = True
 
 ALLOWED_HOSTS = []
@@ -108,19 +113,18 @@ USE_I18N = True
 USE_TZ = True
 
 
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/5.1/howto/static-files/
+
 
 STATIC_URL = 'static/'
 
-# Default primary key field type
-# https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
 from rest_framework_simplejwt.settings import api_settings
 from datetime import timedelta
+
+# Simple JWT settings
 
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=360),
@@ -129,13 +133,13 @@ SIMPLE_JWT = {
     'USER_ID_CLAIM': 'user_id',
     'AUTH_TOKEN_CLASSES': ('rest_framework_simplejwt.tokens.AccessToken',),
     'TOKEN_TYPE_CLAIM': 'token_type',
-    'UPDATE_LAST_LOGIN': False,  # Add this
-    'ALGORITHM': 'HS256',        # Add this
-    'SIGNING_KEY': SECRET_KEY,   # Add this
+    'UPDATE_LAST_LOGIN': False,  
+    'ALGORITHM': 'HS256',        
+    'SIGNING_KEY': SECRET_KEY,   
     'ROTATE_REFRESH_TOKENS': False,
-
     'BLACKLIST_AFTER_ROTATION': False,
 }
+
 
 # Add REST_FRAMEWORK settings
 REST_FRAMEWORK = {
