@@ -11,7 +11,7 @@ class User(AbstractUser):
     role = models.CharField(max_length=50, default='user')  # 'admin' or other roles
     phone_number = models.CharField(max_length=20)
 
-    # Override inherited fields to match your schema
+    # Override inherited fields to match my schema
     first_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
     email = models.EmailField(

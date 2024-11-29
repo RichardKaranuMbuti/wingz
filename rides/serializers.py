@@ -1,13 +1,14 @@
 from rest_framework import serializers
-from django.utils import timezone
-from datetime import timedelta
 from .models import User, Ride, RideEvent
 
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from django.contrib.auth import get_user_model
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.exceptions import AuthenticationFailed
+from rest_framework import serializers
+from django.contrib.auth.password_validation import validate_password
 import logging
+
 
 logger = logging.getLogger(__name__)
 
@@ -48,10 +49,32 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
         
         
 class UserSerializer(serializers.ModelSerializer):
+    password = serializers.CharField(
+        write_only=True,
+        required=True,
+        style={'input_type': 'password'},
+        validators=[validate_password]
+    )
+
     class Meta:
         model = User
-        fields = ['id', 'first_name', 'last_name', 'email', 'phone_number', 'role']
+        fields = ['id', 'username', 'first_name', 'last_name', 'email', 
+                 'phone_number', 'role', 'password']
         read_only_fields = ['id']
+
+    def create(self, validated_data):
+        # Remove the password from validated_data
+        password = validated_data.pop('password')
+        
+        # Create the user instance
+        user = User.objects.create(**validated_data)
+        
+        # Set the password properly (this will hash it)
+        user.set_password(password)
+        user.save()
+        
+        return user
+
 
 class RideEventSerializer(serializers.ModelSerializer):
     class Meta:

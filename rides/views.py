@@ -1,6 +1,4 @@
 from django.shortcuts import render
-
-# views.py
 from rest_framework import viewsets, status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -11,19 +9,17 @@ from django.utils import timezone
 from django.db.models import F
 from datetime import timedelta
 import logging
-
-
 from .models import Ride, RideEvent, User
 from .serializers import RideSerializer, UserSerializer, RideEventSerializer
 from rest_framework import generics
 from rest_framework.permissions import AllowAny
-from django.db.models.expressions import ExpressionWrapper, Window
-from django.db.models.functions import RowNumber
-
-logger = logging.getLogger(__name__)
-
 from rest_framework_simplejwt.views import TokenObtainPairView
 from .serializers import CustomTokenObtainPairSerializer
+from django.db.models import F
+from django.db.models.expressions import RawSQL
+
+
+logger = logging.getLogger(__name__)
 
 
 class CustomTokenObtainPairView(TokenObtainPairView):
@@ -45,14 +41,6 @@ class UserRegistrationView(generics.CreateAPIView):
     serializer_class = UserSerializer
     permission_classes = [AllowAny]
 
-
-from django.utils.decorators import method_decorator
-from django.views.decorators.csrf import csrf_exempt
-
-# @method_decorator(csrf_exempt, name='dispatch')
-
-from django.db.models import F
-from django.db.models.expressions import RawSQL
 
 
 class RideViewSet(viewsets.ModelViewSet):
