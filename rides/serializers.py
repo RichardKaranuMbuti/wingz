@@ -63,13 +63,14 @@ class UserSerializer(serializers.ModelSerializer):
         read_only_fields = ['id']
 
     def create(self, validated_data):
+
         # Remove the password from validated_data
         password = validated_data.pop('password')
         
         # Create the user instance
         user = User.objects.create(**validated_data)
         
-        # Set the password properly (this will hash it)
+        # Set the password
         user.set_password(password)
         user.save()
         
@@ -81,7 +82,9 @@ class RideEventSerializer(serializers.ModelSerializer):
         model = RideEvent
         fields = ['id_ride_event', 'description', 'created_at']
         read_only_fields = ['id_ride_event', 'created_at']
-        
+
+
+
 class RideSerializer(serializers.ModelSerializer):
     rider = UserSerializer(source='id_rider', read_only=True)
     driver = UserSerializer(source='id_driver', read_only=True)
