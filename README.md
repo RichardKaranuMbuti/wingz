@@ -238,6 +238,82 @@ Access the comprehensive API documentation:
 **Challenge**: Keeping database queries minimal (requirement: 2-3 queries).  
 **Solution**: Utilized proper prefetching and `select_related`.
 
+
+
+
+# SQL query 
+
+## Trip Duration Analysis
+The following SQL query analyzes rides that took more than 1 hour to complete, aggregated by month and driver. This query specifically tracks the duration between pickup and dropoff states.
+
+Create the index
+
+```sql
+CREATE INDEX IF NOT EXISTS idx_ride_event_desc_created ON ride_event(description, created_at);
+```
+
+Then;
+
+```sql
+WITH trip_durations AS (
+    SELECT 
+        r.id_ride,
+        r.id_driver_id,
+        u.first_name || ' ' || SUBSTR(u.last_name, 1, 1) as driver_name,
+        MIN(CASE WHEN re.description = 'Status changed to pickup' THEN re.created_at END) as pickup_time,
+        MIN(CASE WHEN re.description = 'Status changed to dropoff' THEN re.created_at END) as dropoff_time,
+        DATE_TRUNC('month', re.created_at) as month
+    FROM ride r
+    JOIN user u ON r.id_driver_id = u.id
+    JOIN ride_event re ON r.id_ride = re.id_ride_id
+    WHERE r.status = 'dropoff'  -- Only completed rides
+    GROUP BY 
+        r.id_ride,
+        r.id_driver_id,
+        u.first_name,
+        u.last_name,
+        DATE_TRUNC('month', re.created_at)
+    HAVING 
+        MIN(CASE WHEN re.description = 'Status changed to pickup' THEN re.created_at END) IS NOT NULL
+        AND MIN(CASE WHEN re.description = 'Status changed to dropoff' THEN re.created_at END) IS NOT NULL
+)
+SELECT 
+    TO_CHAR(month, 'YYYY-MM') as month,
+    driver_name as "Driver",
+    COUNT(*) as "Count of Trips > 1 hr"
+FROM trip_durations
+WHERE 
+    EXTRACT(EPOCH FROM (dropoff_time - pickup_time)) > 3600  -- More than 1 hour in seconds
+GROUP BY 
+    month,
+    driver_name
+ORDER BY 
+    month,
+    driver_name;
+
+```
+
+### Justification
+
+- Efficient Data Processing
+
+  - Uses CTE to compute trip durations once
+  - Filters completed rides early with status = 'dropoff'
+  - Handles driver name formatting (first_name + last initial) in the CTE
+
+
+- Data Integrity:
+
+  - HAVING clause ensures we only include rides with both pickup and dropoff events
+  - Matches the exact sample output format
+
+
+- Performance Considerations
+
+  - Uses existing indexes on foreign keys
+  - Performs date truncation and formatting efficiently
+  - Groups data at appropriate stages to minimize processing
+
 # Contributing
 
 1. Fork the repository.
