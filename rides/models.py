@@ -7,10 +7,10 @@ import math
 
 
 class User(AbstractUser):
-    id_user = models.AutoField(primary_key=True)
+    id = models.AutoField(primary_key=True)
     role = models.CharField(max_length=50, default='user')  # 'admin' or other roles
     phone_number = models.CharField(max_length=20)
-    
+
     # Override inherited fields to match your schema
     first_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
@@ -22,6 +22,7 @@ class User(AbstractUser):
     # Required for custom user model
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username', 'first_name', 'last_name', 'phone_number']
+
 
     class Meta:
         db_table = 'user'
@@ -54,6 +55,7 @@ class Ride(models.Model):
     pickup_time = models.DateTimeField()
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    
 
     class Meta:
         db_table = 'ride'

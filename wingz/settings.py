@@ -24,16 +24,20 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    'corsheaders',
     'rides',
-    'drf_spectacular',
+    
 
 ]
 
 AUTH_USER_MODEL = 'rides.User'
 
+
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -115,9 +119,29 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
+from rest_framework_simplejwt.settings import api_settings
+from datetime import timedelta
+
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=360),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
+    'USER_ID_FIELD': 'id_user',
+    'USER_ID_CLAIM': 'user_id',
+    'AUTH_TOKEN_CLASSES': ('rest_framework_simplejwt.tokens.AccessToken',),
+    'TOKEN_TYPE_CLAIM': 'token_type',
+    'UPDATE_LAST_LOGIN': False,  # Add this
+    'ALGORITHM': 'HS256',        # Add this
+    'SIGNING_KEY': SECRET_KEY,   # Add this
+    'ROTATE_REFRESH_TOKENS': False,
+
+    'BLACKLIST_AFTER_ROTATION': False,
+}
 
 # Add REST_FRAMEWORK settings
 REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ],
     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAuthenticated',
@@ -125,4 +149,35 @@ REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 10,
 }
+
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3000",  # For React/Frontend on localhost
+    "http://127.0.0.1:3000",  # Alternative localhost
+    "http://localhost:8000",  # Backend or API server
+    "http://127.0.0.1:8000",
+]
+
+from corsheaders.defaults import default_headers
+
+CORS_ALLOW_ALL_ORIGINS = True
+
+CORS_ALLOW_HEADERS = list(default_headers) + [
+    "Authorization",
+]
+
+# LOGGING = {
+#     'version': 1,
+#     'disable_existing_loggers': False,
+#     'handlers': {
+#         'console': {
+#             'class': 'logging.StreamHandler',
+#         },
+#     },
+#     'loggers': {
+#         'django.db.backends': {
+#             'level': 'DEBUG',
+#             'handlers': ['console'],
+#         },
+#     },
+# }
 
